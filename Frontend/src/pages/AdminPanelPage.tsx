@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import api from '../api/client';
+import ListadoVotos from './ListadoVotos';
 
 type Vista = 'candidatos' | 'listado' | 'agregar' | 'clave';
 
@@ -70,7 +71,7 @@ function AdminPanelPage() {
 
       <main>
         {vista === 'candidatos' && <CandidatosMasVotados />}
-        {vista === 'listado' && <p>Proximamente</p>}
+        {vista === 'listado' && <ListadoVotos />}
         {vista === 'agregar' && <p>Proximamente</p>}
         {vista === 'clave' && <p>Proximamente</p>}
       </main>
