@@ -58,10 +58,14 @@ class VoteController extends Controller
 
     public function index()
     {
-        $ganador = Voter::where('tipo', 'candidato')
+        $candidatos = Voter::where('tipo', 'candidato')
             ->withCount('votesReceived')
-            ->orderByDesc('votes_received_count')
-            ->first(['id', 'nombre', 'apellido']);
+            ->get(['id', 'nombre', 'apellido']);
+
+        $maxVotos = $candidatos->max('votes_received_count');
+        $liderando = $candidatos->where('votes_received_count', $maxVotos);
+        $empate = $maxVotos > 0 && $liderando->count() > 1;
+        $ganador = ($maxVotos > 0 && ! $empate) ? $liderando->first() : null;
 
         $votos = Vote::with(['voter:id,nombre,apellido', 'candidate:id,nombre,apellido'])
             ->orderByDesc('voted_at')
@@ -69,6 +73,7 @@ class VoteController extends Controller
 
         return response()->json([
             'va_ganando' => $ganador,
+            'empate' => $empate,
             'votos' => $votos,
         ]);
     }

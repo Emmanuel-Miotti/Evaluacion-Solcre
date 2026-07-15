@@ -27,6 +27,7 @@ interface VotoDetalle {
 
 interface ListadoResponse {
   va_ganando: { id: number; nombre: string; apellido: string } | null;
+  empate: boolean;
   votos: {
     data: VotoResumen[];
     current_page: number;
@@ -68,7 +69,8 @@ function ListadoVotos() {
     <div>
       <h2>Listado de votos</h2>
 
-      {datos.va_ganando && (
+      {datos.empate && <p>Empate en el primer puesto</p>}
+      {!datos.empate && datos.va_ganando && (
         <p>
           Va ganando: {datos.va_ganando.nombre} {datos.va_ganando.apellido}
         </p>
