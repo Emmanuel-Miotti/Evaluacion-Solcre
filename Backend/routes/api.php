@@ -13,6 +13,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout']);
     Route::get('/candidatos-mas-votados', [ResultController::class, 'candidatosMasVotados']);
     Route::get('/votos', [VoteController::class, 'index']);
+    Route::get('/votos/{vote}', [VoteController::class, 'show']);
 });
 
 Route::get('/candidatos', [VoterController::class, 'candidatos']);

@@ -72,4 +72,11 @@ class VoteController extends Controller
             'votos' => $votos,
         ]);
     }
+
+    public function show(Vote $vote)
+    {
+        $vote->load(['voter', 'candidate:id,nombre,apellido']);
+
+        return response()->json($vote);
+    }
 }
