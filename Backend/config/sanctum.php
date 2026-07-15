@@ -50,7 +50,8 @@ return [
     |
     */
 
-    'expiration' => null,
+    // Antes en null: los tokens de admin nunca vencian. 480 min = 8 horas de sesion.
+    'expiration' => 480,
 
     /*
     |--------------------------------------------------------------------------
