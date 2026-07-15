@@ -53,7 +53,14 @@ function CandidatosMasVotados() {
   return () => clearInterval(intervalo);
 }, []);
 
-  if (cargando) return <p>Cargando...</p>;
+  if (cargando) {
+    return (
+      <div>
+        <h2>Candidatos mas votados</h2>
+        <div className="skeleton" style={{ height: 280, borderRadius: 12 }} />
+      </div>
+    );
+  }
 
   const datosGrafico = candidatos.map((c) => ({
     nombre: `${c.nombre} ${c.apellido}`,
