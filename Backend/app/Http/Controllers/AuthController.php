@@ -39,4 +39,24 @@ class AuthController extends Controller
         return response()->json(['message' => 'Sesion cerrada']);
     }
 
+    public function updatePassword(Request $request)
+{
+    $data = $request->validate([
+        'clave_actual' => ['required', 'string'],
+        'clave_nueva' => ['required', 'string', 'min:8', 'confirmed'],
+    ]);
+
+    $admin = $request->user();
+
+    if (! Hash::check($data['clave_actual'], $admin->password)) {
+        throw ValidationException::withMessages([
+            'clave_actual' => ['La clave actual no es correcta.'],
+        ]);
+    }
+
+    $admin->update(['password' => $data['clave_nueva']]);
+
+    return response()->json(['message' => 'Clave actualizada correctamente.']);
+}
+
 }
