@@ -9,7 +9,7 @@ use Illuminate\Validation\ValidationException;
 
 class AuthController extends Controller
 {
-    public function Login (Request $request)
+    public function login (Request $request)
     {
         $credentials = $request->validate([
             'email' => 'required|email',
