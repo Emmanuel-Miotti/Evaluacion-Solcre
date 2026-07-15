@@ -2,6 +2,19 @@ import { useState } from 'react';
 import type { FormEvent } from 'react';
 import api from '../api/client';
 
+const soloNumeros = /^[0-9]+$/;
+
+function calcularEdad(fechaNacimiento: string): number {
+  const hoy = new Date();
+  const nacimiento = new Date(fechaNacimiento);
+  let edad = hoy.getFullYear() - nacimiento.getFullYear();
+  const mes = hoy.getMonth() - nacimiento.getMonth();
+  if (mes < 0 || (mes === 0 && hoy.getDate() < nacimiento.getDate())) {
+    edad--;
+  }
+  return edad;
+}
+
 function AgregarVotante() {
   const [documento, setDocumento] = useState('');
   const [tipo, setTipo] = useState<'votante' | 'candidato'>('votante');
@@ -22,6 +35,21 @@ function AgregarVotante() {
 
     if (camposVacios) {
       setMensaje({ tipo: 'error', texto: 'Todos los campos son obligatorios.' });
+      return;
+    }
+
+    if (!soloNumeros.test(documento)) {
+      setMensaje({ tipo: 'error', texto: 'El documento solo puede contener numeros.' });
+      return;
+    }
+
+    if (!soloNumeros.test(telefono)) {
+      setMensaje({ tipo: 'error', texto: 'El telefono solo puede contener numeros.' });
+      return;
+    }
+
+    if (calcularEdad(dob) < 18) {
+      setMensaje({ tipo: 'error', texto: 'El votante debe ser mayor de 18 anos.' });
       return;
     }
 
