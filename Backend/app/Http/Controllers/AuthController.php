@@ -6,6 +6,7 @@ use App\Models\Admin;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
+use Illuminate\Validation\Rules\Password;
 
 class AuthController extends Controller
 {
@@ -40,23 +41,23 @@ class AuthController extends Controller
     }
 
     public function updatePassword(Request $request)
-{
-    $data = $request->validate([
+    {
+        $data = $request->validate([
         'clave_actual' => ['required', 'string'],
-        'clave_nueva' => ['required', 'string', 'min:8', 'confirmed'],
+        'clave_nueva' => ['required', 'string', 'confirmed', Password::min(8)->letters()->numbers()->symbols()],
     ]);
 
-    $admin = $request->user();
+        $admin = $request->user();
 
-    if (! Hash::check($data['clave_actual'], $admin->password)) {
-        throw ValidationException::withMessages([
-            'clave_actual' => ['La clave actual no es correcta.'],
-        ]);
+        if (! Hash::check($data['clave_actual'], $admin->password)) {
+            throw ValidationException::withMessages([
+                'clave_actual' => ['La clave actual no es correcta.'],
+            ]);
+        }
+
+        $admin->update(['password' => $data['clave_nueva']]);
+
+        return response()->json(['message' => 'Clave actualizada correctamente.']);
     }
-
-    $admin->update(['password' => $data['clave_nueva']]);
-
-    return response()->json(['message' => 'Clave actualizada correctamente.']);
-}
 
 }
