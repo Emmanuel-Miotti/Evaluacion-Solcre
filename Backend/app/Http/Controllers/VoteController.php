@@ -55,4 +55,21 @@ class VoteController extends Controller
             'message' => 'El voto se proceso correctamente.',
         ], 201);
     }
+
+    public function index()
+    {
+        $ganador = Voter::where('tipo', 'candidato')
+            ->withCount('votesReceived')
+            ->orderByDesc('votes_received_count')
+            ->first(['id', 'nombre', 'apellido']);
+
+        $votos = Vote::with(['voter:id,nombre,apellido', 'candidate:id,nombre,apellido'])
+            ->orderByDesc('voted_at')
+            ->paginate(10);
+
+        return response()->json([
+            'va_ganando' => $ganador,
+            'votos' => $votos,
+        ]);
+    }
 }
