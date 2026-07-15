@@ -1,6 +1,13 @@
 import { useEffect, useState } from 'react';
 import api from '../api/client';
 
+// Formatea una fecha "YYYY-MM-DD..." a DD/MM/YYYY sin pasar por Date(),
+// para evitar que la conversion de zona horaria corra el dia (dob no tiene hora real).
+function formatearFechaSolo(fechaIso: string): string {
+  const [anio, mes, dia] = fechaIso.slice(0, 10).split('-');
+  return `${dia}/${mes}/${anio}`;
+}
+
 interface VotoResumen {
   id: number;
   voter: { id: number; nombre: string; apellido: string };
@@ -63,6 +70,15 @@ function ListadoVotos() {
     api.get<VotoDetalle>(`/votos/${id}`).then((res) => setDetalle(res.data));
   };
 
+  useEffect(() => {
+    if (!detalle) return;
+    const cerrarConEscape = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setDetalle(null);
+    };
+    window.addEventListener('keydown', cerrarConEscape);
+    return () => window.removeEventListener('keydown', cerrarConEscape);
+  }, [detalle]);
+
   if (cargando || !datos) {
     return (
       <div>
@@ -96,8 +112,8 @@ function ListadoVotos() {
           </tr>
         </thead>
         <tbody>
-          {datos.votos.data.map((v) => (
-            <tr key={v.id}>
+          {datos.votos.data.map((v, i) => (
+            <tr key={v.id} style={{ animationDelay: `${Math.min(i, 8) * 40}ms` }}>
               <td>{v.voter.nombre} {v.voter.apellido}</td>
               <td>{v.candidate.nombre} {v.candidate.apellido}</td>
               <td>{new Date(v.voted_at).toLocaleString()}</td>
@@ -123,18 +139,56 @@ function ListadoVotos() {
       </div>
 
       {detalle && (
-        <div className="detalle-voto">
-          <h3>Detalle del voto</h3>
-          <p>Documento: {detalle.voter.documento}</p>
-          <p>Tipo: {detalle.voter.tipo}</p>
-          <p>Nombre: {detalle.voter.nombre} {detalle.voter.apellido}</p>
-          <p>Fecha de nacimiento: {detalle.voter.dob}</p>
-          <p>Direccion: {detalle.voter.direccion}</p>
-          <p>Telefono: {detalle.voter.telefono}</p>
-          <p>Sexo: {detalle.voter.sexo}</p>
-          <p>Voto a: {detalle.candidate.nombre} {detalle.candidate.apellido}</p>
-          <p>Fecha del voto: {new Date(detalle.voted_at).toLocaleString()}</p>
-          <button onClick={() => setDetalle(null)}>Cerrar</button>
+        <div className="modal-overlay" onClick={() => setDetalle(null)}>
+          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-header">
+              <h3>Detalle del voto</h3>
+              <button className="modal-close" onClick={() => setDetalle(null)} aria-label="Cerrar">
+                &times;
+              </button>
+            </div>
+
+            <div className="modal-body">
+              <div className="detalle-fila">
+                <span>Documento</span>
+                <strong>{detalle.voter.documento}</strong>
+              </div>
+              <div className="detalle-fila">
+                <span>Tipo</span>
+                <strong>{detalle.voter.tipo}</strong>
+              </div>
+              <div className="detalle-fila">
+                <span>Nombre</span>
+                <strong>{detalle.voter.nombre} {detalle.voter.apellido}</strong>
+              </div>
+              <div className="detalle-fila">
+                <span>Fecha de nacimiento</span>
+                <strong>{formatearFechaSolo(detalle.voter.dob)}</strong>
+              </div>
+              <div className="detalle-fila">
+                <span>Direccion</span>
+                <strong>{detalle.voter.direccion}</strong>
+              </div>
+              <div className="detalle-fila">
+                <span>Telefono</span>
+                <strong>{detalle.voter.telefono}</strong>
+              </div>
+              <div className="detalle-fila">
+                <span>Sexo</span>
+                <strong>{detalle.voter.sexo}</strong>
+              </div>
+              <div className="detalle-fila">
+                <span>Voto a</span>
+                <strong>{detalle.candidate.nombre} {detalle.candidate.apellido}</strong>
+              </div>
+              <div className="detalle-fila">
+                <span>Fecha del voto</span>
+                <strong>{new Date(detalle.voted_at).toLocaleString()}</strong>
+              </div>
+            </div>
+
+            <button onClick={() => setDetalle(null)}>Cerrar</button>
+          </div>
         </div>
       )}
     </div>
