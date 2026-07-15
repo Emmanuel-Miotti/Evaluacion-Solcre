@@ -41,12 +41,22 @@ function ListadoVotos() {
   const [cargando, setCargando] = useState(true);
 
   useEffect(() => {
-    setCargando(true);
+  let esPrimeraCarga = true;
+
+  const cargarDatos = () => {
     api.get<ListadoResponse>(`/votos?page=${pagina}`).then((res) => {
       setDatos(res.data);
-      setCargando(false);
+      if (esPrimeraCarga) {
+        setCargando(false);
+        esPrimeraCarga = false;
+      }
     });
-  }, [pagina]);
+  };
+
+  cargarDatos();
+  const intervalo = setInterval(cargarDatos, 1000); // Actualiza cada 1 segundo
+  return () => clearInterval(intervalo);
+}, [pagina]);
 
   const verDetalle = (id: number) => {
     api.get<VotoDetalle>(`/votos/${id}`).then((res) => setDetalle(res.data));

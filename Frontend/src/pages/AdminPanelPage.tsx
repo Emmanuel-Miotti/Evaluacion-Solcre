@@ -32,15 +32,26 @@ function CandidatosMasVotados() {
   const [cargando, setCargando] = useState(true);
 
   useEffect(() => {
+  let esPrimeraCarga = true;
+
+  const cargarDatos = () => {
     Promise.all([
       api.get<CandidatoResultado[]>('/candidatos-mas-votados'),
       api.get<VotosPorSexo[]>('/estadisticas-sexo'),
     ]).then(([resCandidatos, resSexo]) => {
       setCandidatos(resCandidatos.data);
       setVotosPorSexo(resSexo.data);
-      setCargando(false);
+      if (esPrimeraCarga) {
+        setCargando(false);
+        esPrimeraCarga = false;
+      }
     });
-  }, []);
+  };
+
+  cargarDatos();
+  const intervalo = setInterval(cargarDatos, 5000);
+  return () => clearInterval(intervalo);
+}, []);
 
   if (cargando) return <p>Cargando...</p>;
 
