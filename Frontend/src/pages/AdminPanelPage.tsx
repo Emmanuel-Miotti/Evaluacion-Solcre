@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { BarChart, Bar, PieChart, Pie, Cell, Legend, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import api from '../api/client';
 import ListadoVotos from './ListadoVotos';
 import AgregarVotante from './AgregarVotante';
@@ -14,22 +15,56 @@ interface CandidatoResultado {
   votes_received_count: number;
 }
 
+interface VotosPorSexo {
+  sexo: string;
+  total: number;
+}
+
+const COLORES_SEXO: Record<string, string> = {
+  M: '#4f46e5',
+  F: '#ec4899',
+  Otro: '#6b7280',
+};
+
 function CandidatosMasVotados() {
   const [candidatos, setCandidatos] = useState<CandidatoResultado[]>([]);
+  const [votosPorSexo, setVotosPorSexo] = useState<VotosPorSexo[]>([]);
   const [cargando, setCargando] = useState(true);
 
   useEffect(() => {
-    api.get<CandidatoResultado[]>('/candidatos-mas-votados').then((res) => {
-      setCandidatos(res.data);
+    Promise.all([
+      api.get<CandidatoResultado[]>('/candidatos-mas-votados'),
+      api.get<VotosPorSexo[]>('/estadisticas-sexo'),
+    ]).then(([resCandidatos, resSexo]) => {
+      setCandidatos(resCandidatos.data);
+      setVotosPorSexo(resSexo.data);
       setCargando(false);
     });
   }, []);
 
   if (cargando) return <p>Cargando...</p>;
 
+  const datosGrafico = candidatos.map((c) => ({
+    nombre: `${c.nombre} ${c.apellido}`,
+    votos: c.votes_received_count,
+  }));
+
   return (
     <div>
       <h2>Candidatos mas votados</h2>
+
+      <div style={{ width: '100%', height: 280 }}>
+        <ResponsiveContainer>
+          <BarChart data={datosGrafico}>
+            <CartesianGrid strokeDasharray="3 3" stroke="#e2e5ea" />
+            <XAxis dataKey="nombre" tick={{ fontSize: 13 }} />
+            <YAxis allowDecimals={false} tick={{ fontSize: 13 }} />
+            <Tooltip />
+            <Bar dataKey="votos" fill="#4f46e5" radius={[6, 6, 0, 0]} />
+          </BarChart>
+        </ResponsiveContainer>
+      </div>
+
       <ol>
         {candidatos.map((c) => (
           <li key={c.id}>
@@ -37,6 +72,22 @@ function CandidatosMasVotados() {
           </li>
         ))}
       </ol>
+
+      <h2 style={{ marginTop: 32 }}>Votos por sexo</h2>
+
+      <div style={{ width: '100%', height: 240 }}>
+        <ResponsiveContainer>
+          <PieChart>
+            <Pie data={votosPorSexo} dataKey="total" nameKey="sexo" outerRadius={80} label>
+              {votosPorSexo.map((entry) => (
+                <Cell key={entry.sexo} fill={COLORES_SEXO[entry.sexo] ?? '#6b7280'} />
+              ))}
+            </Pie>
+            <Tooltip />
+            <Legend />
+          </PieChart>
+        </ResponsiveContainer>
+      </div>
     </div>
   );
 }

@@ -16,6 +16,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/votos/{vote}', [VoteController::class, 'show']);
     Route::post('/votantes', [VoterController::class, 'store']);
     Route::patch('/clave', [AuthController::class, 'updatePassword']);
+    Route::get('/estadisticas-sexo', [ResultController::class, 'votosPorSexo']);
 });
 
 Route::get('/candidatos', [VoterController::class, 'candidatos']);
