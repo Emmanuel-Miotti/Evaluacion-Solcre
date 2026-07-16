@@ -1,6 +1,10 @@
 <div>
   <h2>Panel de resultados</h2>
 
+  @if (error()) {
+    <p class="mensaje-error">{{ error() }}</p>
+ }
+
   @if (cargando()) {
     <div class="stats-grid">
       <div class="skeleton" style="height: 76px; border-radius: 12px;"></div>

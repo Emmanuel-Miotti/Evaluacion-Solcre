@@ -1,5 +1,5 @@
 import { Component, OnInit, OnDestroy, HostListener, inject, signal } from '@angular/core';
-import { Subscription, timer, switchMap } from 'rxjs';
+import { Subscription, timer, switchMap, catchError, of } from 'rxjs';
 import { VotosService } from '../../../services/votos.service';
 import { ListadoVotosResponse, VotoDetalle } from '../../../models/voto.model';
 import { DatePipe } from '@angular/common';
@@ -24,6 +24,7 @@ export class ListadoVotosComponent implements OnInit, OnDestroy {
   datos = signal<ListadoVotosResponse | null>(null);
   detalle = signal<VotoDetalle | null>(null);
   cargando = signal(true);
+  error = signal<string | null>(null); //señal para manejar errores
 
   ngOnInit(): void {
     this.reiniciarPolling();
@@ -34,13 +35,25 @@ export class ListadoVotosComponent implements OnInit, OnDestroy {
   }
 
   private reiniciarPolling(): void {
-    this.sub?.unsubscribe();
-    this.sub = timer(0, 1000)
-      .pipe(switchMap(() => this.votosService.getVotos(this.pagina())))
-      .subscribe((datos) => {
-        this.datos.set(datos);
+  this.sub?.unsubscribe();
+  this.sub = timer(0, 1000)
+    .pipe(
+      switchMap(() =>
+        this.votosService.getVotos(this.pagina()).pipe(
+          catchError(() => of(null))
+        )
+      )
+    )
+    .subscribe((datos) => {
+      if (datos === null) {
+        this.error.set('No se pudo actualizar el listado. Reintentando...');
         this.cargando.set(false);
-      });
+        return;
+      }
+      this.datos.set(datos);
+      this.error.set(null);
+      this.cargando.set(false);
+    });
   }
 
   irAPagina(delta: number): void {
@@ -50,7 +63,10 @@ export class ListadoVotosComponent implements OnInit, OnDestroy {
   }
 
   verDetalle(id: number): void {
-    this.votosService.getDetalle(id).subscribe((detalle) => this.detalle.set(detalle));
+    this.votosService.getDetalle(id).subscribe({
+      next: (detalle) => this.detalle.set(detalle),
+      error: () => this.error.set('No se pudo cargar el detalle del voto.'),
+    });
   }
 
   cerrarDetalle(): void {

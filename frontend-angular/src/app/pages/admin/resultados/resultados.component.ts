@@ -1,5 +1,5 @@
 import { Component, OnInit, OnDestroy, inject, signal, computed } from '@angular/core';
-import { Subscription, timer, switchMap, forkJoin } from 'rxjs';
+import { Subscription, timer, switchMap, forkJoin, catchError, of } from 'rxjs';
 import { CandidatosService } from '../../../services/candidatos.service';
 import { CandidatoResultado, VotosPorSexo } from '../../../models/candidato.model';
 
@@ -17,6 +17,7 @@ export class ResultadosComponent implements OnInit, OnDestroy {
   candidatos = signal<CandidatoResultado[]>([]);
   votosPorSexo = signal<VotosPorSexo[]>([]);
   cargando = signal(true);
+  error = signal<string | null>(null);
 
   totalVotos = computed(() =>
     this.candidatos().reduce((acc, c) => acc + c.votes_received_count, 0)
@@ -36,22 +37,32 @@ export class ResultadosComponent implements OnInit, OnDestroy {
   });
 
   ngOnInit(): void {
-    this.sub = timer(0, 5000)
-      .pipe(
-        switchMap(() =>
-          forkJoin([
-            this.candidatosService.getMasVotados(),
-            this.candidatosService.getEstadisticasSexo(),
-          ])
+  this.sub = timer(0, 5000)
+    .pipe(
+      switchMap(() =>
+        forkJoin([
+          this.candidatosService.getMasVotados(),
+          this.candidatosService.getEstadisticasSexo(),
+        ]).pipe(
+          // Si un tick falla (red, backend caido), devolvemos null para no
+          // matar el timer: el proximo tick a los 5s reintenta solo.
+          catchError(() => of(null))
         )
       )
-      .subscribe(([candidatos, sexo]) => {
-        this.candidatos.set(candidatos);
-        this.votosPorSexo.set(sexo);
+    )
+    .subscribe((resultado) => {
+      if (resultado === null) {
+        this.error.set('No se pudieron actualizar los resultados. Reintentando...');
         this.cargando.set(false);
-      });
+        return;
+      }
+      const [candidatos, sexo] = resultado;
+      this.candidatos.set(candidatos);
+      this.votosPorSexo.set(sexo);
+      this.error.set(null);
+      this.cargando.set(false);
+    });
   }
-
   ngOnDestroy(): void {
     this.sub?.unsubscribe();
   }

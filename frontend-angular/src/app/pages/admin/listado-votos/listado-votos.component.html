@@ -1,5 +1,8 @@
 <div>
   <h2>Listado de votos</h2>
+  @if (error()) {
+    <p class="mensaje-error">{{ error() }}</p>
+  }
 
   @if (cargando() || !datos()) {
     <div class="skeleton skeleton-line" style="width: 40%"></div>
