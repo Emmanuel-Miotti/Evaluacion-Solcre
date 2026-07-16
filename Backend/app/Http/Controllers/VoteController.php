@@ -4,18 +4,15 @@ namespace App\Http\Controllers;
 
 use App\Models\Vote;
 use App\Models\Voter;
-use Illuminate\Http\Request;
 use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\RateLimiter;
+use App\Http\Requests\StoreVoteRequest;
 
 class VoteController extends Controller
 {
-    public function store(Request $request)
+    public function store(StoreVoteRequest  $request)
     {
-        $data = $request->validate([
-            'documento' => ['required', 'string'],
-            'candidato_id' => ['required', 'integer'],
-        ]);
+        $data = $request->validated();
 
         // Si alguien va probando documentos al azar (no encontrados en el padron),
         // despues de 5 intentos fallidos se bloquea esa IP por 5 minutos.

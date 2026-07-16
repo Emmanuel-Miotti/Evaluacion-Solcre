@@ -6,16 +6,14 @@ use App\Models\Admin;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
-use Illuminate\Validation\Rules\Password;
+use App\Http\Requests\LoginRequest;
+use App\Http\Requests\UpdatePasswordRequest;
 
 class AuthController extends Controller
 {
-    public function login (Request $request)
+    public function login (LoginRequest $request)
     {
-        $credentials = $request->validate([
-            'email' => 'required|email',
-            'password' => 'required',
-        ]);
+        $credentials = $request->validated();
 
         $admin = Admin::where('email', $credentials['email'])->first();
 
@@ -40,12 +38,9 @@ class AuthController extends Controller
         return response()->json(['message' => 'Sesion cerrada']);
     }
 
-    public function updatePassword(Request $request)
+    public function updatePassword(UpdatePasswordRequest  $request)
     {
-        $data = $request->validate([
-        'clave_actual' => ['required', 'string'],
-        'clave_nueva' => ['required', 'string', 'confirmed', Password::min(8)->letters()->numbers()->symbols()],
-    ]);
+        $data = $request->validated();
 
         $admin = $request->user();
 
