@@ -1,0 +1,39 @@
+<div class="voting-page">
+  <h1>Emitir voto</h1>
+
+  @if (cargandoCandidatos()) {
+    <div class="skeleton" style="height: 40px; border-radius: 8px;"></div>
+    <div class="skeleton" style="height: 40px; border-radius: 8px; margin-top: 12px;"></div>
+  } @else {
+    <form [formGroup]="form" (ngSubmit)="votar()">
+      <label for="documento">Documento</label>
+      <input id="documento" type="text" formControlName="documento" />
+      @if (form.controls.documento.touched && form.controls.documento.invalid) {
+        <p class="mensaje-error">Ingresa un documento valido (solo numeros).</p>
+      }
+
+      <label for="candidato">Candidato</label>
+      <select id="candidato" formControlName="candidatoId">
+        <option value="">Seleccionar...</option>
+        @for (c of candidatos(); track c.id) {
+          <option [value]="c.id">{{ c.nombre }} {{ c.apellido }}</option>
+        }
+      </select>
+      @if (form.controls.candidatoId.touched && form.controls.candidatoId.invalid) {
+        <p class="mensaje-error">Selecciona un candidato.</p>
+      }
+
+      <button type="submit" [disabled]="enviando()">
+        {{ enviando() ? 'Enviando...' : 'Votar' }}
+      </button>
+    </form>
+  }
+
+  @if (mensaje()) {
+    <p [class]="mensaje()!.tipo === 'success' ? 'mensaje-exito' : 'mensaje-error'">
+      {{ mensaje()!.texto }}
+    </p>
+  }
+
+  <a routerLink="/login">Ir a gestion</a>
+</div>

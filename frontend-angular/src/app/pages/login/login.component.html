@@ -1,0 +1,18 @@
+<div class="login-page">
+  <h1>Gestion</h1>
+  <form [formGroup]="form" (ngSubmit)="ingresar()">
+    <label for="email">Email</label>
+    <input id="email" type="email" formControlName="email" />
+
+    <label for="password">Clave</label>
+    <input id="password" type="password" formControlName="password" />
+
+    <button type="submit" [disabled]="enviando()">
+      {{ enviando() ? 'Ingresando...' : 'Ingresar' }}
+    </button>
+  </form>
+
+  @if (error()) {
+    <p class="mensaje-error">{{ error() }}</p>
+  }
+</div>

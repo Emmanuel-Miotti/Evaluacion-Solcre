@@ -1,0 +1,13 @@
+<div class="admin-panel">
+  <nav>
+    <a routerLink="resultados" routerLinkActive="activo">Candidatos mas votados</a>
+    <a routerLink="listado" routerLinkActive="activo">Listar votos ingresados</a>
+    <a routerLink="agregar" routerLinkActive="activo">Agregar nuevo votante</a>
+    <a routerLink="clave" routerLinkActive="activo">Modificar clave del administrador</a>
+    <button (click)="cerrarSesion()">Cerrar sesion</button>
+  </nav>
+
+  <main>
+    <router-outlet />
+  </main>
+</div>
