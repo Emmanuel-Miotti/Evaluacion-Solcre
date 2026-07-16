@@ -15,5 +15,9 @@ return Application::configure(basePath: dirname(__DIR__))
         //
     })
     ->withExceptions(function (Exceptions $exceptions): void {
-        //
+        // Toda excepcion de regla de negocio se devuelve con el mismo formato JSON.
+        $exceptions->render(function (App\Exceptions\ReglaDeNegocioException $e) {
+            return response()->json(['message' => $e->getMessage()], $e->getStatus());
+        });
     })->create();
+
