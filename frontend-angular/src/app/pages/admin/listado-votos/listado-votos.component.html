@@ -1,1 +1,70 @@
-<p>listado-votos works!</p>
+<div>
+  <h2>Listado de votos</h2>
+
+  @if (cargando() || !datos()) {
+    <div class="skeleton skeleton-line" style="width: 40%"></div>
+    @for (i of [1, 2, 3, 4, 5]; track i) {
+      <div class="skeleton skeleton-row"></div>
+    }
+  } @else {
+    @if (datos()!.empate) {
+      <p>Empate en el primer puesto</p>
+    } @else if (datos()!.va_ganando) {
+      <p>Va ganando: {{ datos()!.va_ganando!.nombre }} {{ datos()!.va_ganando!.apellido }}</p>
+    }
+
+    <table>
+      <thead>
+        <tr>
+          <th>Votante</th>
+          <th>Candidato</th>
+          <th>Fecha</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (v of datos()!.votos.data; track v.id) {
+          <tr>
+            <td>{{ v.voter.nombre }} {{ v.voter.apellido }}</td>
+            <td>{{ v.candidate.nombre }} {{ v.candidate.apellido }}</td>
+            <td>{{ v.voted_at | date: 'medium' }}</td>
+            <td>
+              <button (click)="verDetalle(v.id)">Ver detalle</button>
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+
+    <div>
+      <button [disabled]="pagina() <= 1" (click)="irAPagina(-1)">Anterior</button>
+      <span> Pagina {{ datos()!.votos.current_page }} de {{ datos()!.votos.last_page }} </span>
+      <button [disabled]="pagina() >= datos()!.votos.last_page" (click)="irAPagina(1)">Siguiente</button>
+    </div>
+
+    @if (detalle(); as d) {
+      <div class="modal-overlay" (click)="cerrarDetalle()">
+        <div class="modal-content" (click)="$event.stopPropagation()">
+          <div class="modal-header">
+            <h3>Detalle del voto</h3>
+            <button class="modal-close" (click)="cerrarDetalle()" aria-label="Cerrar">&times;</button>
+          </div>
+
+          <div class="modal-body">
+            <div class="detalle-fila"><span>Documento</span><strong>{{ d.voter.documento }}</strong></div>
+            <div class="detalle-fila"><span>Tipo</span><strong>{{ d.voter.tipo }}</strong></div>
+            <div class="detalle-fila"><span>Nombre</span><strong>{{ d.voter.nombre }} {{ d.voter.apellido }}</strong></div>
+            <div class="detalle-fila"><span>Fecha de nacimiento</span><strong>{{ formatearFecha(d.voter.dob) }}</strong></div>
+            <div class="detalle-fila"><span>Direccion</span><strong>{{ d.voter.direccion }}</strong></div>
+            <div class="detalle-fila"><span>Telefono</span><strong>{{ d.voter.telefono }}</strong></div>
+            <div class="detalle-fila"><span>Sexo</span><strong>{{ d.voter.sexo }}</strong></div>
+            <div class="detalle-fila"><span>Voto a</span><strong>{{ d.candidate.nombre }} {{ d.candidate.apellido }}</strong></div>
+            <div class="detalle-fila"><span>Fecha del voto</span><strong>{{ d.voted_at | date: 'medium' }}</strong></div>
+          </div>
+
+          <button (click)="cerrarDetalle()">Cerrar</button>
+        </div>
+      </div>
+    }
+  }
+</div>

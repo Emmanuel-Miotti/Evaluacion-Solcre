@@ -7,9 +7,19 @@
   } @else {
     <form [formGroup]="form" (ngSubmit)="votar()">
       <label for="documento">Documento</label>
-      <input id="documento" type="text" formControlName="documento" />
+      <input id="documento" type="text" formControlName="documento" maxlength="20" />
       @if (form.controls.documento.touched && form.controls.documento.invalid) {
-        <p class="mensaje-error">Ingresa un documento valido (solo numeros).</p>
+        <ul class="mensaje-error">
+          @if (form.controls.documento.errors?.['required']) {
+            <li>Ingresa tu documento.</li>
+          }
+          @if (form.controls.documento.errors?.['pattern']) {
+            <li>El documento solo puede contener numeros.</li>
+          }
+          @if (form.controls.documento.errors?.['maxlength']) {
+            <li>El documento no puede tener mas de 20 digitos.</li>
+          }
+        </ul>
       }
 
       <label for="candidato">Candidato</label>

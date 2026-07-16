@@ -1,1 +1,46 @@
-<p>cambiar-clave works!</p>
+<div>
+  <h2>Modificar clave del administrador</h2>
+  <form [formGroup]="form" (ngSubmit)="actualizar()">
+    <label for="claveActual">Clave actual</label>
+    <input id="claveActual" type="password" formControlName="claveActual" />
+
+    <label for="claveNueva">Clave nueva</label>
+    <input id="claveNueva" type="password" formControlName="claveNueva" />
+    @if (form.controls.claveNueva.touched && form.controls.claveNueva.invalid) {
+      <ul class="mensaje-error">
+        @if (form.controls.claveNueva.errors?.['required']) {
+          <li>La clave nueva es obligatoria.</li>
+        }
+        @if (form.controls.claveNueva.errors?.['muyCorta']) {
+          <li>Debe tener al menos 8 caracteres.</li>
+        }
+        @if (form.controls.claveNueva.errors?.['sinLetras']) {
+          <li>Debe incluir al menos una letra.</li>
+        }
+        @if (form.controls.claveNueva.errors?.['sinNumeros']) {
+          <li>Debe incluir al menos un numero.</li>
+        }
+        @if (form.controls.claveNueva.errors?.['sinSimbolos']) {
+          <li>Debe incluir al menos un simbolo (ej: !@#$%).</li>
+        }
+      </ul>
+    }
+
+    <label for="claveNuevaRepetida">Repetir clave nueva</label>
+    <input id="claveNuevaRepetida" type="password" formControlName="claveNuevaRepetida" />
+
+    @if (form.errors?.['clavesNoCoinciden'] && form.controls.claveNuevaRepetida.touched) {
+      <p class="mensaje-error">Las claves nuevas no coinciden.</p>
+    }
+
+    <button type="submit" [disabled]="enviando() || form.invalid">
+      {{ enviando() ? 'Guardando...' : 'Actualizar clave' }}
+    </button>
+  </form>
+
+  @if (mensaje()) {
+    <p [class]="mensaje()!.tipo === 'success' ? 'mensaje-exito' : 'mensaje-error'">
+      {{ mensaje()!.texto }}
+    </p>
+  }
+</div>

@@ -1,1 +1,57 @@
-<p>resultados works!</p>
+<div>
+  <h2>Panel de resultados</h2>
+
+  @if (cargando()) {
+    <div class="stats-grid">
+      <div class="skeleton" style="height: 76px; border-radius: 12px;"></div>
+      <div class="skeleton" style="height: 76px; border-radius: 12px;"></div>
+      <div class="skeleton" style="height: 76px; border-radius: 12px;"></div>
+    </div>
+  } @else if (candidatos().length === 0) {
+    <p style="color: var(--color-text-muted)">Todavia no hay candidatos cargados.</p>
+  } @else {
+    <div class="stats-grid">
+      <div class="stat-card">
+        <span class="stat-label">Total de votos</span>
+        <strong class="stat-value">{{ totalVotos() }}</strong>
+      </div>
+      <div class="stat-card">
+        <span class="stat-label">Va ganando</span>
+        <strong class="stat-value">{{ liderTexto() }}</strong>
+      </div>
+      <div class="stat-card">
+        <span class="stat-label">Candidatos</span>
+        <strong class="stat-value">{{ candidatos().length }}</strong>
+      </div>
+    </div>
+
+    <div class="ranking-list">
+      @for (c of ranking(); track c.id; let i = $index) {
+        <div class="ranking-row" [class.es-primero]="i === 0 && maxVotos() > 0">
+          <div class="ranking-rank">{{ i + 1 }}</div>
+          <div class="ranking-info">
+            <div class="ranking-nombre">{{ c.nombre }} {{ c.apellido }}</div>
+            <div class="ranking-bar-track">
+              <div class="ranking-bar-fill" [style.width.%]="porcentaje(c.votes_received_count)"></div>
+            </div>
+          </div>
+          <div class="ranking-votos">{{ c.votes_received_count }}</div>
+        </div>
+      }
+    </div>
+
+    @if (votosPorSexo().length > 0) {
+      <div class="chart-card" style="margin-top: 20px;">
+        <h3>Votos por sexo</h3>
+        @for (s of votosPorSexo(); track s.sexo) {
+          <div class="ranking-row">
+            <div class="ranking-info">
+              <div class="ranking-nombre">{{ s.sexo }}</div>
+            </div>
+            <div class="ranking-votos">{{ s.total }}</div>
+          </div>
+        }
+      </div>
+    }
+  }
+</div>

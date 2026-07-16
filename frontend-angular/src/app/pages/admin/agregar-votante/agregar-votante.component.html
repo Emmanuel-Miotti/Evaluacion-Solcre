@@ -1,1 +1,72 @@
-<p>agregar-votante works!</p>
+<div>
+  <h2>Agregar nuevo votante</h2>
+  <form [formGroup]="form" (ngSubmit)="agregar()">
+    <label for="documento">Documento</label>
+    <input id="documento" formControlName="documento" />
+    @if (form.controls.documento.touched && form.controls.documento.invalid) {
+      <p class="mensaje-error">El documento es obligatorio y solo puede contener numeros.</p>
+    }
+
+    <fieldset>
+      <legend>Tipo</legend>
+      <label>
+        <input type="radio" formControlName="tipo" value="votante" />
+        Votante
+      </label>
+      <label>
+        <input type="radio" formControlName="tipo" value="candidato" />
+        Candidato
+      </label>
+    </fieldset>
+
+    <label for="nombre">Nombre</label>
+    <input id="nombre" formControlName="nombre" />
+    @if (form.controls.nombre.touched && form.controls.nombre.invalid) {
+      <p class="mensaje-error">El nombre es obligatorio.</p>
+    }
+
+    <label for="apellido">Apellido</label>
+    <input id="apellido" formControlName="apellido" />
+    @if (form.controls.apellido.touched && form.controls.apellido.invalid) {
+      <p class="mensaje-error">El apellido es obligatorio.</p>
+    }
+
+    <label for="dob">Fecha de nacimiento</label>
+    <input id="dob" type="date" formControlName="dob" />
+    @if (form.controls.dob.touched && form.controls.dob.errors?.['required']) {
+      <p class="mensaje-error">La fecha de nacimiento es obligatoria.</p>
+    }
+    @if (form.controls.dob.touched && form.controls.dob.errors?.['menorDeEdad']) {
+      <p class="mensaje-error">El votante debe ser mayor de 18 anos.</p>
+    }
+
+    <label for="direccion">Direccion</label>
+    <input id="direccion" formControlName="direccion" />
+    @if (form.controls.direccion.touched && form.controls.direccion.invalid) {
+      <p class="mensaje-error">La direccion es obligatoria.</p>
+    }
+
+    <label for="telefono">Telefono</label>
+    <input id="telefono" formControlName="telefono" />
+    @if (form.controls.telefono.touched && form.controls.telefono.invalid) {
+      <p class="mensaje-error">El telefono es obligatorio y solo puede contener numeros.</p>
+    }
+
+    <label for="sexo">Sexo</label>
+    <select id="sexo" formControlName="sexo">
+      <option value="M">M</option>
+      <option value="F">F</option>
+      <option value="Otro">Otro</option>
+    </select>
+
+    <button type="submit" [disabled]="enviando()">
+      {{ enviando() ? 'Guardando...' : 'Agregar' }}
+    </button>
+  </form>
+
+  @if (mensaje()) {
+    <p [class]="mensaje()!.tipo === 'success' ? 'mensaje-exito' : 'mensaje-error'">
+      {{ mensaje()!.texto }}
+    </p>
+  }
+</div>
