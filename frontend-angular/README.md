@@ -1,59 +1,67 @@
-# FrontendAngular
+# Sistema de Votacion - Frontend
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 19.2.27.
+Frontend en Angular 19 (Angular CLI) para el sistema de votacion. Consume la API del backend en Laravel.
 
-## Development server
+> Esta version en Angular reemplaza a la primera entrega hecha en React. El detalle de los cambios esta en la nota de entrega del repositorio.
 
-To start a local development server, run:
+## Requisitos
 
-```bash
-ng serve
+- Node.js 20.11 o superior (tambien sirve 18.19+ o 22+)
+- npm
+
+## Instalacion
+
+1. Clonar el repositorio y entrar a la carpeta `frontend-angular`:
+
+```
+git clone https://github.com/Emmanuel-Miotti/Evaluacion-Solcre.git
+cd Evaluacion-Solcre/frontend-angular
 ```
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
+2. Instalar dependencias:
 
-## Code scaffolding
-
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
-
-```bash
-ng generate component component-name
+```
+npm install
 ```
 
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
+3. Verificar que el backend este corriendo en `http://localhost:8000` (ver README del Backend). La URL base de la API esta en `src/environments/environment.ts`; si el backend corre en otro puerto, ajustar `apiUrl` ahi.
 
-```bash
-ng generate --help
+4. Levantar el servidor de desarrollo:
+
+```
+npm start
 ```
 
-## Building
+La aplicacion queda disponible en `http://localhost:4200`.
 
-To build the project run:
+## Pantallas
 
-```bash
-ng build
+- `/` - Pantalla de votacion: ingreso de documento y seleccion de candidato.
+- `/login` - Login del administrador.
+- `/admin` - Panel de administracion (requiere login), con sub-rutas:
+  - `/admin/resultados` - Candidatos mas votados, con actualizacion automatica cada 5 segundos.
+  - `/admin/listado` - Listado paginado de votos con detalle de cada voto, actualizacion automatica cada 1 segundo.
+  - `/admin/agregar` - Alta de votantes o candidatos.
+  - `/admin/clave` - Cambio de clave del administrador.
+
+## Datos de prueba
+
+- Administrador: `admin@votacion.test` / `Admin123!`
+- Documentos de votantes de prueba: del `12345678` al `89012345` (ver README del Backend).
+
+## Estructura
+
+```
+src/app/
+  core/       Autenticacion: AuthService, interceptor HTTP (token + manejo de 401) y guard de rutas
+  models/     Interfaces TypeScript de las respuestas de la API
+  services/   Servicios que encapsulan las llamadas HTTP (candidatos, votos, votantes, admin)
+  pages/      Componentes de pantalla (votacion, login, panel admin y sus vistas)
 ```
 
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
+## Notas
 
-## Running unit tests
-
-To execute unit tests with the [Karma](https://karma-runner.github.io) test runner, use the following command:
-
-```bash
-ng test
-```
-
-## Running end-to-end tests
-
-For end-to-end (e2e) testing, run:
-
-```bash
-ng e2e
-```
-
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
-
-## Additional Resources
-
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+- El token de sesion se guarda en `localStorage` bajo la clave `admin_token`.
+- Si la sesion vence (la API responde 401), el interceptor limpia el token y redirige automaticamente a `/login`.
+- Los listados usan skeletons de carga y el polling se recupera solo ante errores de red.
+- Para verificar el build de produccion: `npx ng build` (genera `dist/`).

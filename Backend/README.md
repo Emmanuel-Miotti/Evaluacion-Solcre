@@ -1,6 +1,6 @@
 # Sistema de Votacion - Backend
 
-Backend desarrollado en Laravel 12 (PHP) para el sistema de votacion. Expone una API REST consumida por el frontend en React.
+Backend desarrollado en Laravel 12 (PHP) para el sistema de votacion. Expone una API REST consumida por el frontend en Angular (carpeta `frontend-angular`).
 
 ## Requisitos
 
