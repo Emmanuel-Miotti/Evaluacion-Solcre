@@ -1,6 +1,7 @@
 import { Component, inject, signal } from '@angular/core';
 import { ReactiveFormsModule, FormBuilder, Validators, AbstractControl, ValidationErrors } from '@angular/forms';
 import { VotantesService } from '../../../services/votantes.service';
+import { mensajeDeApi } from '../../../core/api-error';
 
 function mayorDeEdadValidator(control: AbstractControl): ValidationErrors | null {
   const dob = control.value;
@@ -60,8 +61,7 @@ export class AgregarVotanteComponent {
         this.enviando.set(false);
       },
       error: (err) => {
-        const texto = err.error?.message ?? 'No se pudo agregar el votante.';
-        this.mensaje.set({ tipo: 'error', texto });
+        this.mensaje.set({ tipo: 'error', texto: mensajeDeApi(err, 'No se pudo agregar el votante.') });
         this.enviando.set(false);
       },
     });

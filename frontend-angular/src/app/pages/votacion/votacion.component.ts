@@ -4,6 +4,7 @@ import { RouterLink } from '@angular/router';
 import { CandidatosService } from '../../services/candidatos.service';
 import { VotosService } from '../../services/votos.service';
 import { Candidato } from '../../models/candidato.model';
+import { mensajeDeApi } from '../../core/api-error';
 
 type Mensaje = { tipo: 'success' | 'error'; texto: string } | null;
 
@@ -60,8 +61,7 @@ export class VotacionComponent implements OnInit {
         this.enviando.set(false);
       },
       error: (err) => {
-        const texto = err.error?.message ?? 'Ocurrio un error al procesar el voto.';
-        this.mensaje.set({ tipo: 'error', texto });
+        this.mensaje.set({ tipo: 'error', texto: mensajeDeApi(err, 'Ocurrio un error al procesar el voto.') });
         this.enviando.set(false);
       },
     });

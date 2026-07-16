@@ -7,6 +7,7 @@ import {
   ValidationErrors,
 } from '@angular/forms';
 import { AdminService } from '../../../services/admin.service';
+import { mensajeDeApi } from '../../../core/api-error';
 
 function clavesCoincidenValidator(control: AbstractControl): ValidationErrors | null {
   const nueva = control.get('claveNueva')?.value;
@@ -78,8 +79,7 @@ export class CambiarClaveComponent {
           this.enviando.set(false);
         },
         error: (err) => {
-          const texto = err.error?.message ?? 'No se pudo actualizar la clave.';
-          this.mensaje.set({ tipo: 'error', texto });
+          this.mensaje.set({ tipo: 'error', texto: mensajeDeApi(err, 'No se pudo actualizar la clave.') });
           this.enviando.set(false);
         },
       });
