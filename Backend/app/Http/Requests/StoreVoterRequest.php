@@ -23,7 +23,7 @@ class StoreVoterRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'documento' => ['required', 'string', 'regex:/^[0-9]+$/', 'max:20', 'unique:voters,documento'],
+            'documento' => ['required', 'string', 'regex:/^[0-9]+$/', 'min:6', 'max:20', 'unique:voters,documento'],
             'tipo' => ['required', 'in:votante,candidato'],
             'nombre' => ['required', 'string', 'max:100', 'regex:/^[A-Za-zÀ-ÖØ-öø-ÿ\s]+$/'],
             'apellido' => ['required', 'string', 'max:100', 'regex:/^[A-Za-zÀ-ÖØ-öø-ÿ\s]+$/'],
@@ -38,6 +38,8 @@ class StoreVoterRequest extends FormRequest
     {
         return [
             'documento.regex' => 'El documento solo puede contener numeros.',
+            'documento.unique' => 'El documento ya esta registrado en el padron.',
+            'documento.min' => 'El documento debe tener al menos 6 digitos.',
             'telefono.regex' => 'El telefono solo puede contener numeros.',
             'nombre.regex' => 'El nombre solo puede contener letras.',
             'apellido.regex' => 'El apellido solo puede contener letras.',

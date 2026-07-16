@@ -23,7 +23,7 @@ class StoreVoteRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'documento' => ['required', 'string', 'regex:/^[0-9]+$/', 'max:20'],
+            'documento' => ['required', 'string', 'regex:/^[0-9]+$/', 'min:6', 'max:20'],
             'candidato_id' => ['required', 'integer', 'min:1'],
         ];
     }
@@ -32,6 +32,7 @@ class StoreVoteRequest extends FormRequest
     {
         return [
             'documento.regex' => 'El documento solo puede contener numeros.',
+            'documento.min' => 'El documento debe tener al menos 6 digitos.',
         ];
     }
 }

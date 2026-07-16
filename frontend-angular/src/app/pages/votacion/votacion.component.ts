@@ -26,7 +26,7 @@ export class VotacionComponent implements OnInit {
   mensaje = signal<Mensaje>(null);
 
   form = this.fb.nonNullable.group({
-    documento: ['', [Validators.required, Validators.pattern(/^[0-9]+$/), Validators.maxLength(20)]],
+    documento: ['', [Validators.required, Validators.pattern(/^[0-9]+$/), Validators.minLength(6), Validators.maxLength(20)]],
     candidatoId: ['', Validators.required],
   });
 

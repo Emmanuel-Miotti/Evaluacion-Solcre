@@ -35,7 +35,7 @@ export class AgregarVotanteComponent {
   mensaje = signal<Mensaje>(null);
 
   form = this.fb.nonNullable.group({
-    documento: ['', [Validators.required, Validators.pattern(/^[0-9]+$/)]],
+    documento: ['', [Validators.required, Validators.pattern(/^[0-9]+$/), Validators.minLength(6), Validators.maxLength(20)]],
     tipo: ['votante' as 'votante' | 'candidato', Validators.required],
     nombre: ['', Validators.required],
     apellido: ['', Validators.required],

@@ -16,6 +16,9 @@
           @if (form.controls.documento.errors?.['pattern']) {
             <li>El documento solo puede contener numeros.</li>
           }
+          @if (form.controls.documento.errors?.['minlength']) {
+            <li>El documento debe tener al menos 6 digitos.</li>
+          }
           @if (form.controls.documento.errors?.['maxlength']) {
             <li>El documento no puede tener mas de 20 digitos.</li>
           }
